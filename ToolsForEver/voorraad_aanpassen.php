@@ -1,5 +1,10 @@
 <?php
 
+session_start();
+
+if (!isset($_SESSION['is_logged_in']) || $_SESSION['is_logged_in'] !== true) {
+    die("Page not available");
+}
 
 $conn = require_once "common/connectionDB.php";
 $locatieID = $_POST['plaats'];
@@ -44,10 +49,10 @@ if($result1->num_rows > 0){
 
     if($nieuwAantal > 0){
         $verkoopWaarde = waardeBerekenen($nieuwAantal, $verkoopPrijs);
-        $inkoopkoopWaarde = waardeBerekenen($nieuwAantal, $inkoopPrijs);
+        $inkoopWaarde = waardeBerekenen($nieuwAantal, $inkoopPrijs);
 
         $stmt2 = $conn->prepare("UPDATE Voorraad SET  aantal = ?, inkoopwaarde = ?, verkoopwaarde = ? WHERE idLocaties = ? and idArtikel = ?;");
-        $stmt2->bind_param("iddii", $nieuwAantal,$inkoopkoopWaarde,$verkoopWaarde, $locatieID, $artikelID);
+        $stmt2->bind_param("iddii", $nieuwAantal,$inkoopWaarde,$verkoopWaarde, $locatieID, $artikelID);
         $stmt2->execute();
         $stmt2->close();
 
